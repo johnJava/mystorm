@@ -63,8 +63,22 @@ public class KafkaDemoTopoloy {
 	    @Override
 	    public void execute(Tuple tuple, BasicOutputCollector collector) {
 	      System.out.println("msg:"+tuple);
-	      initParti();
-	      producer.send(new KeyedMessage<String, String>("t2","from storm :"+tuple.toString()));
+	      List<Object> list= tuple.getValues();
+			
+			String id = (String) list.get(0);
+			String memberid = (String) list.get(1);
+			String totalprice = (String) list.get(2);
+			String youhui = (String) list.get(3);
+			String sendpay = (String) list.get(4);
+			
+			if("0".equals(sendpay)){
+				sendpay = "-1";
+			}
+			
+			System.out.println("list="+list.toString()+"  sendpay = "+sendpay);
+			
+	      /*initParti();
+	      producer.send(new KeyedMessage<String, String>("t2","from storm :"+tuple.toString()));*/
 	    }
 	    @Override
 	    public void declareOutputFields(OutputFieldsDeclarer declarer) {
