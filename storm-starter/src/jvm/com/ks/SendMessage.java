@@ -1,6 +1,7 @@
 package com.ks;
 import java.util.Properties;
 import java.util.Random;
+
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
@@ -42,7 +43,7 @@ public class SendMessage {
 			.append("\t")
 			.append(String.valueOf(sendpay))
 			.append("\t")
-			.append("2014-04-19");
+			.append(System.currentTimeMillis());
 			System.out.println(data.toString());
 			producer.send(new KeyedMessage<String, String>("t2",data.toString()));
 			try {
