@@ -23,39 +23,38 @@ public class GenLog {
     static int count=0;
    public static void main(String[] args) throws IOException, InterruptedException, ParseException {
     	count=0;
-		int FILESIZE = 1*1024*1024;//1m
+		int FILESIZE = 1024*1024;//1m
 		int filenums=1;//begin 4:16 
 		SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		Date d = smf.parse("2015-01-11 11:55:13.812");
+		Date d = smf.parse("2015-02-11 11:55:13.812");
 		long begindate = d.getTime();
 		for (int i = 1; i <=filenums; i++) {
-			String fpath = "/home/wangliang/flumetmp/flumelog/"+System.currentTimeMillis();
+			String fpath = "F:/wangliang/storm/flumelog/"+System.currentTimeMillis();
 			FileOutputStream fos = getFOStream(fpath+".tmp");
 			FileChannel fc = fos.getChannel();
 			int fsize=0;
-			//int bufsize=1024;
-			ByteBuffer buf = ByteBuffer.allocate(FILESIZE+1024);
+			int bufsize=5*1024*1024;
+			ByteBuffer buf = ByteBuffer.allocate(bufsize+30);
 			byte[] msg =null;
 			while(fsize<FILESIZE){
 				msg= genData(String.valueOf(begindate)).getBytes();
-				//int preposition = msg.length+buf.position();
+				int preposition = msg.length+buf.position();
 				fsize+=msg.length;
 				System.out.println("fsize:"+fsize+" < "+FILESIZE);
-				//System.out.println("preposition:"+preposition);
-				buf.put(msg);
-//				if(preposition<bufsize){
-//				}else{
-//					buf.flip();
-//					fc.write(buf);
-//					printBuf(buf);
-//					buf.clear();
-//					buf.put(msg);
-//				}
-//				try {
-//					Thread.sleep(1);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
+				System.out.println("preposition:"+preposition);
+				if(preposition<bufsize){
+					buf.put(msg);
+				}else{
+					buf.flip();
+					fc.write(buf);
+					buf.clear();
+					buf.put(msg);
+				}
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				begindate++;
 			}
 			buf.flip();
