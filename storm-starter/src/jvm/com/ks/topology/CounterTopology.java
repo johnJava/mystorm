@@ -3,19 +3,18 @@ package com.ks.topology;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import com.google.common.collect.ImmutableList;
-import com.ks.bolt.CounterBolt;
-
 import storm.kafka.BrokerHosts;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
 import storm.kafka.StringScheme;
 import storm.kafka.ZkHosts;
 import backtype.storm.Config;
-import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
 import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.topology.TopologyBuilder;
+
+import com.google.common.collect.ImmutableList;
+import com.ks.bolt.CounterBolt;
 
 public class CounterTopology {
 	public static FileOutputStream out=null;

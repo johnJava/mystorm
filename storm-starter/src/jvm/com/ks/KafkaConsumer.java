@@ -35,7 +35,7 @@ import org.apache.commons.collections.CollectionUtils;
         ConsumerConnector javaConsumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);  
        
         //topic�Ĺ�����  
-        Whitelist whitelist = new Whitelist("t2");  
+        Whitelist whitelist = new Whitelist("t5");  
         List<KafkaStream<byte[], byte[]>> partitions = javaConsumerConnector.createMessageStreamsByFilter(whitelist);  
        
         if (CollectionUtils.isEmpty(partitions)) {  

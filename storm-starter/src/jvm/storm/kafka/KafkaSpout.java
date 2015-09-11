@@ -6,9 +6,12 @@ import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
+import backtype.storm.tuple.Fields;
 import kafka.message.Message;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import storm.kafka.PartitionManager.KafkaMessageId;
 
 import java.util.*;
@@ -114,10 +117,9 @@ public class KafkaSpout extends BaseRichSpout {
     }
 
     @Override
-    public void nextTuple() {
+    public  void nextTuple() {
         List<PartitionManager> managers = _coordinator.getMyManagedPartitions();
         for (int i = 0; i < managers.size(); i++) {
-
             // in case the number of managers decreased
             _currPartitionIndex = _currPartitionIndex % managers.size();
             EmitState state = managers.get(_currPartitionIndex).next(_collector);
@@ -160,6 +162,7 @@ public class KafkaSpout extends BaseRichSpout {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
+    	//declarer.declare(new Fields("word", "count"));
         declarer.declare(_spoutConfig.scheme.getOutputFields());
     }
 

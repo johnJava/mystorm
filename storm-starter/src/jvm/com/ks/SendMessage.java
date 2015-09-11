@@ -13,7 +13,7 @@ public class SendMessage {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Properties props = new Properties();
+		/*Properties props = new Properties();
 		props.put("zookeeper.connect", "CH5:2181,CH6:2181,CH7:2181");
 		props.put("serializer.class", "kafka.serializer.StringEncoder");
 		props.put("producer.type", "async");
@@ -24,9 +24,11 @@ public class SendMessage {
 		
 		ProducerConfig config = new ProducerConfig(props);
 		Producer<String, String> producer = new Producer<String, String>(config);
-		
+		*/
 		Random r = new Random();
-		while(true){
+		int end=10000;
+		int i=0;
+		while(++i<=end){
 			int id = r.nextInt(10000000);
 			int memberid = r.nextInt(100000);
 			int totalprice = r.nextInt(1000)+100;
@@ -45,9 +47,9 @@ public class SendMessage {
 			.append("\t")
 			.append(System.currentTimeMillis());
 			System.out.println(data.toString());
-			producer.send(new KeyedMessage<String, String>("t2",data.toString()));
+//			producer.send(new KeyedMessage<String, String>("t2",data.toString()));
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

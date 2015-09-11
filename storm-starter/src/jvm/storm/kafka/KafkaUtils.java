@@ -136,7 +136,7 @@ public class KafkaUtils {
     }
 
     public static ByteBufferMessageSet fetchMessages(KafkaConfig config, SimpleConsumer consumer, Partition partition, long offset) {
-        ByteBufferMessageSet msgs = null;
+    	ByteBufferMessageSet msgs = null;
         String topic = config.topic;
         int partitionId = partition.partition;
         for (int errors = 0; errors < 2 && msgs == null; errors++) {
@@ -181,7 +181,8 @@ public class KafkaUtils {
         if (key != null && kafkaConfig.scheme instanceof KeyValueSchemeAsMultiScheme) {
             tups = ((KeyValueSchemeAsMultiScheme) kafkaConfig.scheme).deserializeKeyAndValue(Utils.toByteArray(key), Utils.toByteArray(payload));
         } else {
-            tups = kafkaConfig.scheme.deserialize(Utils.toByteArray(payload));
+        	byte[] kmsg = Utils.toByteArray(payload);
+            tups = kafkaConfig.scheme.deserialize(kmsg);
         }
         return tups;
     }
