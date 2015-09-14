@@ -22,8 +22,8 @@ public class GenEquLog {
 		/*args= new String[2];
 		args[0]="x";
 		args[1]="30";*/
-		if(args.length!=3){
-			throw new Exception("参数个数不对，应该为3个");
+		if(args.length<3){
+			throw new Exception("参数个数不对，应该不少于3个");
 		}
 		String suborgcode=args[0];
 		int equs=Integer.valueOf(args[1]);
@@ -35,17 +35,23 @@ public class GenEquLog {
 	List<String> vals = null;//变量数组
 	String suborgcode;//风场代码
 	int equs;//风机数目
-	static final String DEFAULT_LOG_DIR="F:/wangliang/storm/flumelog/";
+	static final String DEFAULT_LOG_DIR="/root/wangliang/storm/flumelog/";
 	String LOG_DIR; 
+	int interval;
+	static final int DEFAULT_INTERVAL=1000;
 	Random random = new Random();
 	SimpleDateFormat smf = new  SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	public GenEquLog(String suborgcode,int equs) {
 		this(suborgcode, equs, DEFAULT_LOG_DIR);
 	}
 	public GenEquLog(String suborgcode,int equs,String logdir) {
+		this(suborgcode, equs, logdir, DEFAULT_INTERVAL);
+	}
+	public GenEquLog(String suborgcode,int equs,String logdir,int interval) {
 		this.suborgcode=suborgcode;
 		this.equs=equs;
 		this.LOG_DIR=logdir;
+		this.interval=interval;
 		loadVals();//加载变量名称
 	}
 	public void startGenerateLog(){
@@ -55,7 +61,6 @@ public class GenEquLog {
 		}
 	}
 	class Worker implements Runnable{
-		private static final int DEFAULT_INTERVAL=1000;
 		private static final int DEFAULT_BUFFER_SIZE=5*1024*1024;
 		private String equnum;//风机编号
 		private int interval;
