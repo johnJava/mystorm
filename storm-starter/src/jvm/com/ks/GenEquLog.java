@@ -118,9 +118,9 @@ public class GenEquLog {
 		 * @throws IOException 
 		 */
 		public void writeLogContent(long cur,FileChannel fileChannel) throws IOException {
-			for (int i = this.interval; i < fileinterval; i+=this.interval) {
+			for (int i = this.interval; i <=fileinterval; i+=this.interval) {
 				long curtime=System.currentTimeMillis();
-				buf.put(generateLogContent(curtime));
+				buf.put(generateLogContent(i,curtime));
 				buf.flip();
 				fileChannel.write(buf);
 				buf.clear();
@@ -137,7 +137,7 @@ public class GenEquLog {
 		 * @param curtime 监测时间
 		 * @return
 		 */
-		public byte[] generateLogContent(long curtime){
+		public byte[] generateLogContent(int t,long curtime){
 			/* 	变量名		监测时间		风电型号编号	风电企业编号	风电场编号		风机编号		监测值
 				valname		curtime		equmodel	org			suborg		equnum		value */
 			StringBuffer content = new StringBuffer();
@@ -157,8 +157,9 @@ public class GenEquLog {
 				content.append(equnum+"\t");
 				content.append(value);
 				i++;
-				if(i<vals.size())content.append("\n");
+				content.append("\n");
 			}
+			if(t==fileinterval)content.deleteCharAt(content.lastIndexOf("\n"));
 			return content.toString().getBytes();
 		}
 
