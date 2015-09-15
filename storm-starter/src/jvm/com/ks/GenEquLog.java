@@ -25,10 +25,14 @@ public class GenEquLog {
 		if(args.length<3){
 			throw new Exception("参数个数不对，应该不少于3个");
 		}
+		int finterval=DEFAULT_FILE_INTERVAL;
+		if(args.length>3){
+			finterval=Integer.valueOf(args[3]);
+		}
 		String suborgcode=args[0];
 		int equs=Integer.valueOf(args[1]);
 		String logdir=args[2];
-		GenEquLog gnlog = new GenEquLog(suborgcode, equs,logdir);
+		GenEquLog gnlog = new GenEquLog(suborgcode, equs,logdir,finterval);
 		gnlog.startGenerateLog();
 	}
 	
@@ -37,21 +41,22 @@ public class GenEquLog {
 	int equs;//风机数目
 	static final String DEFAULT_LOG_DIR="/root/wangliang/storm/flumelog/";
 	String LOG_DIR; 
-	int interval;
-	static final int DEFAULT_INTERVAL=1000;
+	int fileinterval;
+	static final int DEFAULT_MONITOR_INTERVAL=1000;
+	static final int DEFAULT_FILE_INTERVAL=1000;
 	Random random = new Random();
 	SimpleDateFormat smf = new  SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	public GenEquLog(String suborgcode,int equs) {
 		this(suborgcode, equs, DEFAULT_LOG_DIR);
 	}
 	public GenEquLog(String suborgcode,int equs,String logdir) {
-		this(suborgcode, equs, logdir, DEFAULT_INTERVAL);
+		this(suborgcode, equs, logdir, DEFAULT_FILE_INTERVAL);
 	}
-	public GenEquLog(String suborgcode,int equs,String logdir,int interval) {
+	public GenEquLog(String suborgcode,int equs,String logdir,int fileinterval) {
 		this.suborgcode=suborgcode;
 		this.equs=equs;
 		this.LOG_DIR=logdir;
-		this.interval=interval;
+		this.fileinterval=fileinterval;
 		loadVals();//加载变量名称
 	}
 	public void startGenerateLog(){
@@ -61,17 +66,17 @@ public class GenEquLog {
 		}
 	}
 	class Worker implements Runnable{
-		private static final int DEFAULT_BUFFER_SIZE=5*1024*1024;
+		private static final int DEFAULT_BUFFER_SIZE=11*1024;
 		private String equnum;//风机编号
 		private int interval;
 		private ByteBuffer buf = null;//ByteBuffer.allocate(1024);
 		@SuppressWarnings("unused")
 		private Worker(){};
 		public Worker(String equnum) {
-			this(equnum, DEFAULT_INTERVAL);
+			this(equnum, DEFAULT_MONITOR_INTERVAL);
 		}
 		public Worker(String equnum,int interval) {
-			this(equnum, DEFAULT_INTERVAL, DEFAULT_BUFFER_SIZE);
+			this(equnum, DEFAULT_MONITOR_INTERVAL, DEFAULT_BUFFER_SIZE);
 		}
 		public Worker(String equnum,int interval,int bufsize) {
 			this.equnum=equnum;
@@ -88,11 +93,6 @@ public class GenEquLog {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				try {
-					Thread.sleep(this.interval);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
 		}
 		/**
@@ -103,6 +103,7 @@ public class GenEquLog {
 		 */
 		public void generateLogFile(String filename, long curtime) throws IOException {
 			String filepath = LOG_DIR+"/"+filename;
+			System.out.println("filepath:"+filepath);
 			FileOutputStream fos = getFOStream(filepath+".tmp");
 			writeLogContent(curtime,fos.getChannel());
 			fos.close();
@@ -117,18 +118,27 @@ public class GenEquLog {
 		 * @return
 		 * @throws IOException 
 		 */
-		public void writeLogContent(long curtime, FileChannel fileChannel) throws IOException {
-			buf.put(generateLogContent(curtime));
-			buf.flip();
-			fileChannel.write(buf);
+		public void writeLogContent(long cur,FileChannel fileChannel) throws IOException {
+			for (int i = this.interval; i <=fileinterval; i+=this.interval) {
+				long curtime=System.currentTimeMillis();
+				buf.put(generateLogContent(i,curtime));
+				buf.flip();
+				fileChannel.write(buf);
+				buf.clear();
+				long cost = System.currentTimeMillis()-curtime;
+				try {
+					Thread.sleep(this.interval-cost);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			fileChannel.close();
-			buf.clear();
 		}
 		/**
 		 * @param curtime 监测时间
 		 * @return
 		 */
-		public byte[] generateLogContent(long curtime){
+		public byte[] generateLogContent(int t,long curtime){
 			/* 	变量名		监测时间		风电型号编号	风电企业编号	风电场编号		风机编号		监测值
 				valname		curtime		equmodel	org			suborg		equnum		value */
 			StringBuffer content = new StringBuffer();
@@ -148,8 +158,9 @@ public class GenEquLog {
 				content.append(equnum+"\t");
 				content.append(value);
 				i++;
-				if(i<vals.size())content.append("\n");
+				content.append("\n");
 			}
+			if(t==fileinterval)content.deleteCharAt(content.lastIndexOf("\n"));
 			return content.toString().getBytes();
 		}
 
