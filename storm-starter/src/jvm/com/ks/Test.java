@@ -7,11 +7,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class Test {
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws Exception {
 		SimpleDateFormat smf = new  SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		Date d1 = smf.parse("2015-09-12 20:00:00.000");
@@ -30,6 +32,22 @@ public class Test {
 		Date d16 = smf.parse("2015-09-13 01:00:00.000");
 		Date d17 = smf.parse("2015-09-13 02:00:00.000");
 		Date d18 = smf.parse("2015-09-13 03:00:00.000");
+		Date d19 = smf.parse("2015-09-13 23:59:59.999");
+		long dlong = d19.getTime();
+		System.out.println("d19 long ="+dlong);
+		long lt = dlong/1000;
+		System.out.println("d19 sec ="+lt+"("+smf.format(new Date(lt*1000l))+")");
+		lt = dlong/60000;
+		System.out.println("d19 m ="+lt+"("+smf.format(new Date(lt*60000l))+")");
+		lt = dlong/(60000*60);
+		System.out.println("d19 h ="+lt+"("+smf.format(new Date(lt*3600000l))+")");
+		lt = (dlong+60000*60*8)/(60000*60*24);
+		System.out.println("d19 d ="+lt+"("+smf.format(new Date(lt*60000*60*24l))+")");
+		System.out.println("d19 d ="+lt+"("+d19.getDay()+")");
+		System.out.println("d19 W ="+lt+"("+smf.format(new Date(lt*60000*60*24l))+")");
+		System.out.println("d19 M ="+lt+"("+d19.getMonth()+")");
+		System.out.println("d19 Y ="+lt+"("+d19.getYear()+")");
+		
 		System.out.println(d1.getTime());
 		System.out.println(d2.getTime());
 		System.out.println(d3.getTime());
