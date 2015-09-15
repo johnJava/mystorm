@@ -34,7 +34,7 @@ public class Test {
 		Date d18 = smf.parse("2015-09-13 03:00:00.000");
 		Date d19 = smf.parse("2015-09-13 23:59:59.999");
 		long dlong = d19.getTime();
-		System.out.println("d19 long ="+dlong);
+		System.out.println("d19 long 1="+dlong);
 		long lt = dlong/1000;
 		System.out.println("d19 sec ="+lt+"("+smf.format(new Date(lt*1000l))+")");
 		lt = dlong/60000;
