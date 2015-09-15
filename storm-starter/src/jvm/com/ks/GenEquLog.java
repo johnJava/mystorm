@@ -103,7 +103,7 @@ public class GenEquLog {
 		 */
 		public void generateLogFile(String filename, long curtime) throws IOException {
 			String filepath = LOG_DIR+"/"+filename;
-			System.out.println("filepath:"+filepath);
+			System.out.println("filepath123:"+filepath);
 			FileOutputStream fos = getFOStream(filepath+".tmp");
 			writeLogContent(curtime,fos.getChannel());
 			fos.close();
